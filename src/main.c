@@ -1075,6 +1075,10 @@ static int init_nvnc(struct wayvnc* self)
 			goto auth_failure;
 		}
 
+		if (self->cfg.password) {
+			nvnc_set_vnc_auth_passwd(self->nvnc, self->cfg.password);
+		}
+
 		if (self->cfg.rsa_private_key_file) {
 			char tmp[PATH_MAX];
 			const char* key_file = get_cfg_path(&self->cfg, tmp,
@@ -1319,11 +1323,6 @@ int check_cfg_sanity(struct cfg* cfg)
 
 		if (!!cfg->certificate_file != !!cfg->private_key_file) {
 			nvnc_log(NVNC_LOG_ERROR, "Need both certificate_file and private_key_file for TLS");
-			rc = -1;
-		}
-
-		if (!cfg->username && !cfg->enable_pam) {
-			nvnc_log(NVNC_LOG_ERROR, "Authentication enabled, but missing username");
 			rc = -1;
 		}
 
